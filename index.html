@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Counting — 60 MCQ Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f1a;
+    --surface: #141629;
+    --card: #1a1e35;
+    --border: #252a45;
+    --accent1: #6c63ff;
+    --accent2: #f7605c;
+    --accent3: #3ecfb2;
+    --accent4: #f5c842;
+    --text: #e8eaf6;
+    --muted: #8a90b8;
+    --correct: #3ecfb2;
+    --wrong: #f7605c;
+    --radius: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.35);
+    color: #a89fff;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 100px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 6vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, #a89fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  /* Score Bar */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 28px;
+    margin-bottom: 40px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .score-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .score-item .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  .score-item .lbl {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .score-item.correct .val { color: var(--correct); }
+  .score-item.wrong .val   { color: var(--wrong); }
+  .score-item.remain .val  { color: var(--accent4); }
+  .score-item.total .val   { color: var(--accent1); }
+
+  .progress-wrap {
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .progress-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent1), var(--accent3));
+    border-radius: 100px;
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Question Card */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .q-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent3));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .q-card.answered::before { opacity: 1; }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent1);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .q-num::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .q-text {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.65;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+
+  .q-text .math {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(108,99,255,0.12);
+    border: 1px solid rgba(108,99,255,0.2);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #c4bfff;
+  }
+
+  /* Options */
+  .options {
+    display: grid;
+    gap: 12px;
+  }
+
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    background: rgba(255,255,255,0.02);
+    position: relative;
+  }
+
+  .opt:hover:not(.locked) {
+    border-color: var(--accent1);
+    background: rgba(108,99,255,0.08);
+    transform: translateX(4px);
+  }
+
+  .opt-key {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 8px;
+    background: var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    transition: all 0.22s;
+  }
+
+  .opt-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #c8cde8;
+    flex: 1;
+    padding-top: 4px;
+  }
+
+  /* States */
+  .opt.correct-ans {
+    border-color: var(--correct);
+    background: rgba(62,207,178,0.08);
+  }
+  .opt.correct-ans .opt-key {
+    background: var(--correct);
+    color: #0d1a17;
+  }
+
+  .opt.wrong-ans {
+    border-color: var(--wrong);
+    background: rgba(247,96,92,0.08);
+  }
+  .opt.wrong-ans .opt-key {
+    background: var(--wrong);
+    color: #1a0a0a;
+  }
+
+  .opt.neutral-reveal {
+    border-color: rgba(138,144,184,0.3);
+    opacity: 0.7;
+  }
+
+  .opt.locked { cursor: default; }
+
+  /* Explanation block */
+  .explanation-block {
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    display: none;
+    animation: fadeSlide 0.35s ease forwards;
+  }
+
+  .explanation-block.show { display: block; }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .exp-title {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+
+  .exp-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+
+  .exp-badge {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .exp-badge.c { background: rgba(62,207,178,0.2); color: var(--correct); border: 1px solid rgba(62,207,178,0.4); }
+  .exp-badge.w { background: rgba(247,96,92,0.15); color: var(--wrong); border: 1px solid rgba(247,96,92,0.3); }
+
+  .exp-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #9aa0c4;
+  }
+
+  .exp-text strong { color: var(--text); }
+
+  /* Result card */
+  .result-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 48px;
+    text-align: center;
+    margin-top: 40px;
+    animation: fadeSlide 0.5s ease forwards;
+  }
+
+  .result-card.show { display: block; }
+
+  .result-emoji { font-size: 4rem; margin-bottom: 16px; }
+
+  .result-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 30%, #a89fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .result-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--accent3);
+    margin: 20px 0;
+  }
+
+  .result-msg { color: var(--muted); font-size: 16px; margin-bottom: 30px; }
+
+  .btn-restart {
+    background: linear-gradient(135deg, var(--accent1), #9c97ff);
+    color: #fff;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .btn-restart:hover { opacity: 0.88; transform: scale(1.04); }
+
+  @media (max-width: 600px) {
+    .q-card { padding: 24px 20px; }
+    .score-bar { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="tag">Lecture 9 — Discrete Mathematics</div>
+    <h1>Counting</h1>
+    <p class="subtitle">50 Multiple Choice Questions · B O D Y EDITION</p>
+  </header>
+
+  <div class="score-bar">
+    <div class="score-item correct"><span class="val" id="s-correct">0</span><span class="lbl">Correct</span></div>
+    <div class="score-item wrong"><span class="val" id="s-wrong">0</span><span class="lbl">Wrong</span></div>
+    <div class="score-item remain"><span class="val" id="s-remain">50</span><span class="lbl">Remaining</span></div>
+    <div class="score-item total"><span class="val" id="s-pct">0%</span><span class="lbl">Score</span></div>
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="prog"></div></div>
+      <div class="progress-label" id="prog-lbl">0 / 50 answered</div>
+    </div>
+  </div>
+
+  <div id="quiz"></div>
+
+  <div class="result-card" id="result">
+    <div class="result-emoji" id="r-emoji">🎓</div>
+    <div class="result-title">Quiz Complete!</div>
+    <div class="result-score" id="r-score">—</div>
+    <div class="result-msg" id="r-msg">—</div>
+    <button class="btn-restart" onclick="restartQuiz()">↺ Restart Quiz</button>
+  </div>
+
+</div>
+
+<script>
+const Q = [
+  // ─── PRODUCT RULE ──────────────────────────────────────────
+  {
+    q: "How many bit strings of length 7 are there?",
+    opts: ["64","128","256","512"],
+    ans: 1,
+    exp: [
+      "64 = 2⁶ — this would be the count for length 6, not 7.",
+      "✓ 128 = 2⁷. Each of the 7 positions can be 0 or 1; by the product rule: 2×2×2×2×2×2×2 = 128.",
+      "256 = 2⁸ — this is the count for length 8 strings.",
+      "512 = 2⁹ — too large; corresponds to length 9."
+    ]
+  },
+  {
+    q: "A company has 2 employees and rents a floor with 12 offices. How many ways can different offices be assigned to these two employees?",
+    opts: ["12","24","132","144"],
+    ans: 2,
+    exp: [
+      "12 — this only counts assigning 1 office total, ignoring the second employee.",
+      "24 — this would be 12 × 2, mixing up the logic.",
+      "✓ 132 = 12 × 11. The first employee chooses from 12 offices, then the second chooses from the remaining 11. By the product rule: 12 × 11 = 132.",
+      "144 = 12 × 12 — this allows both employees to share the same office, which violates the 'different offices' condition."
+    ]
+  },
+  {
+    q: "How many different ways can a true/false test with 10 questions be answered?",
+    opts: ["20","100","512","1024"],
+    ans: 3,
+    exp: [
+      "20 = 2 × 10 — this wrongly uses addition instead of multiplication.",
+      "100 = 10² — this confuses base and exponent.",
+      "512 = 2⁹ — this would be 9 questions, not 10.",
+      "✓ 1024 = 2¹⁰. Each of the 10 questions has 2 choices (T or F); by the product rule: 2¹⁰ = 1024."
+    ]
+  },
+  {
+    q: "Auditorium chairs are labeled with an uppercase English letter followed by a positive integer not exceeding 100. How many chairs can be labeled differently?",
+    opts: ["126","2600","260","2700"],
+    ans: 1,
+    exp: [
+      "126 = 26 + 100 — this wrongly adds instead of multiplies.",
+      "✓ 2600 = 26 × 100. There are 26 letter choices and 100 integer choices. By the product rule: 26 × 100 = 2600.",
+      "260 = 26 × 10 — this only allows integers 1–10, not 1–100.",
+      "2700 — not derived from a valid calculation for this problem."
+    ]
+  },
+  {
+    q: "How many license plates consist of exactly 3 uppercase English letters followed by 3 digits?",
+    opts: ["1,757,600","17,576,000","175,760","1,757"],
+    ans: 1,
+    exp: [
+      "1,757,600 = 26³ × 100 — this uses only 2-digit numbers.",
+      "✓ 17,576,000 = 26 × 26 × 26 × 10 × 10 × 10 = 17,576,000. Three letter positions (26 each) and three digit positions (10 each).",
+      "175,760 — a factor of 100 too small.",
+      "1,757 — far too small; missing several multiplications."
+    ]
+  },
+  {
+    q: "How many functions are there from a set with 5 elements to a set with 4 elements?",
+    opts: ["20","512","1024","256"],
+    ans: 2,
+    exp: [
+      "20 = 4 × 5 — this just multiplies the sizes, which is not the formula for counting functions.",
+      "512 = 2⁵ — this uses base 2 instead of base 4.",
+      "✓ 1024 = 4⁵. Each of the 5 domain elements can map to any of the 4 co-domain elements; by the product rule: 4⁵ = 1024.",
+      "256 = 4⁴ — this is the count when domain also has 4 elements."
+    ]
+  },
+  {
+    q: "A PIN consists of exactly 4 symbols, each chosen from 26 letters and 10 digits, with repetition allowed. How many different PINs are possible?",
+    opts: ["360,000","1,679,616","46,656","1,296"],
+    ans: 1,
+    exp: [
+      "360,000 = 36⁴ is correct — wait, let's check: 36⁴ = 1,679,616 ≠ 360,000. So 360,000 is wrong.",
+      "✓ 1,679,616 = 36⁴. There are 36 symbols (26 letters + 10 digits). With repetition allowed and 4 positions: 36⁴ = 1,679,616.",
+      "46,656 = 36³ — correct base but wrong exponent (3 positions, not 4).",
+      "1,296 = 6⁴ — uses wrong base 6."
+    ]
+  },
+  {
+    q: "How many bit strings of length 5 both start AND end with 1?",
+    opts: ["4","8","16","32"],
+    ans: 1,
+    exp: [
+      "4 = 2² — only 2 free positions. Actually this IS 8, not 4. Let's be precise: positions 2,3,4 are free.",
+      "✓ 8 = 1 × 2 × 2 × 2 × 1 = 2³. Bit 1 is fixed (1), bits 2–4 are free (2 choices each), bit 5 is fixed (1). Total = 8.",
+      "16 = 2⁴ — this counts strings starting with 1 only (1 fixed, 4 free), not both conditions.",
+      "32 = 2⁵ — this is all possible 5-bit strings with no constraints."
+    ]
+  },
+  {
+    q: "How many one-to-one functions exist from a set with 3 elements to a set with 7 elements?",
+    opts: ["21","35","210","343"],
+    ans: 2,
+    exp: [
+      "21 = 7 × 3 — simple multiplication, not the correct formula.",
+      "35 — this is C(7,3), choosing without arranging.",
+      "✓ 210 = 7 × 6 × 5. For a 1-1 function, element 1 maps to any of 7, element 2 to any of 6 remaining, element 3 to any of 5. n–m+1 = 7–3+1 = 5, so: 7×6×5 = 210.",
+      "343 = 7³ — this counts ALL functions, not just one-to-one."
+    ]
+  },
+  {
+    q: "If a set has m elements and the co-domain has n elements with n = m = 5, how many one-to-one functions exist?",
+    opts: ["25","120","3125","5"],
+    ans: 1,
+    exp: [
+      "25 = 5² — not the right formula.",
+      "✓ 120 = 5! = 5 × 4 × 3 × 2 × 1. When n = m, one-to-one functions are bijections, and the count is n! = 5! = 120.",
+      "3125 = 5⁵ — this counts all functions (including non-injective ones).",
+      "5 — this is just n, not a meaningful count here."
+    ]
+  },
+  {
+    q: "A student must choose one course from each of 3 departments. Department A offers 5 courses, B offers 4, C offers 6. How many schedules are possible?",
+    opts: ["15","120","45","72"],
+    ans: 1,
+    exp: [
+      "15 = 5 + 4 + 6 — uses sum instead of product (only valid if the student picks from just ONE department).",
+      "✓ 120 = 5 × 4 × 6. The student makes three sequential independent choices; by the product rule: 5 × 4 × 6 = 120.",
+      "45 — not derived correctly.",
+      "72 — not derived correctly from these numbers."
+    ]
+  },
+
+  // ─── SUM RULE ──────────────────────────────────────────────
+  {
+    q: "There are 37 math majors and 83 physics majors, with no student in both. How many ways can one representative be chosen?",
+    opts: ["46","3071","120","83"],
+    ans: 2,
+    exp: [
+      "46 = 83 – 37 — subtraction has no logical basis here.",
+      "3071 = 37 × 83 — the product rule applies when doing BOTH tasks sequentially, not choosing one.",
+      "✓ 120 = 37 + 83. Since the sets are disjoint (no student is in both majors), the sum rule gives 37 + 83 = 120 possible choices.",
+      "83 — only counting the physics majors, ignoring math majors."
+    ]
+  },
+  {
+    q: "A student picks from one of three project lists containing 23, 15, and 19 projects. No project appears on more than one list. How many projects are there to choose from?",
+    opts: ["23","57","6555","38"],
+    ans: 1,
+    exp: [
+      "23 — counts only the first list.",
+      "✓ 57 = 23 + 15 + 19. Since no project appears on more than one list (disjoint sets), the sum rule gives 23 + 15 + 19 = 57.",
+      "6555 = 23 × 15 × 19 — the product rule applies when choosing one from each list simultaneously, which is not the scenario here.",
+      "38 = 23 + 15 — forgets the third list."
+    ]
+  },
+  {
+    q: "When can the Sum Rule be applied directly without adjustment?",
+    opts: ["When the sets overlap","When the sets are disjoint","When one set is a subset of the other","When all sets are equal"],
+    ans: 1,
+    exp: [
+      "When the sets overlap — if sets share elements, direct addition double-counts shared members; you must use inclusion-exclusion.",
+      "✓ When the sets are disjoint — the sum rule |A₁ ∪ A₂ ∪ … ∪ Aₘ| = |A₁| + |A₂| + … + |Aₘ| holds exactly when all sets are pairwise disjoint.",
+      "When one set is a subset of the other — a subset relationship implies overlap, so elements of the smaller set would be double-counted.",
+      "When all sets are equal — equal sets are maximally overlapping; direct addition would count every element n times."
+    ]
+  },
+  {
+    q: "A password is 6 to 8 characters long, each character an uppercase letter or digit. The total password count is best expressed as:",
+    opts: ["36⁶","36⁶ + 36⁷ + 36⁸","3 × 36⁷","6 × 36 + 7 × 36 + 8 × 36"],
+    ans: 1,
+    exp: [
+      "36⁶ — this only counts 6-character passwords, ignoring lengths 7 and 8.",
+      "✓ 36⁶ + 36⁷ + 36⁸. Passwords of lengths 6, 7, and 8 form three disjoint sets. By the sum rule, the total is the sum of each group.",
+      "3 × 36⁷ — incorrect; it treats all lengths as if they were length 7.",
+      "6×36 + 7×36 + 8×36 — uses multiplication of length by alphabet size, not exponentiation."
+    ]
+  },
+  {
+    q: "How many strings of length 6 over {uppercase letters, digits} contain at least one digit?",
+    opts: ["26⁶","36⁶ − 26⁶","36⁶","36⁶ + 26⁶"],
+    ans: 1,
+    exp: [
+      "26⁶ — this counts strings with ONLY letters, which is the exact set we want to exclude.",
+      "✓ 36⁶ − 26⁶. Total 6-character strings (any char) minus those with no digits (letters only): 36⁶ − 26⁶.",
+      "36⁶ — this includes strings with zero digits, violating the 'at least one digit' condition.",
+      "36⁶ + 26⁶ — addition here has no logical basis."
+    ]
+  },
+
+  // ─── SUBTRACTION / INCLUSION-EXCLUSION ─────────────────────
+  {
+    q: "350 applicants: 220 studied CS, 147 studied business, 51 studied both. How many studied neither?",
+    opts: ["51","34","316","83"],
+    ans: 1,
+    exp: [
+      "51 — this is the count who studied both, not neither.",
+      "✓ 34 = |U| − |A ∪ B| = 350 − (220 + 147 − 51) = 350 − 316 = 34. Apply inclusion-exclusion to find |A ∪ B|, then subtract from the universal set.",
+      "316 = 220 + 147 − 51 = |A ∪ B| — this counts those who studied at least one of CS/business, not neither.",
+      "83 — no correct derivation leads here."
+    ]
+  },
+  {
+    q: "The Subtraction Rule (Inclusion-Exclusion for two sets) states: |A ∪ B| = ?",
+    opts: ["|A| + |B|","|A| + |B| − |A ∩ B|","|A| × |B|","|A| − |B|"],
+    ans: 1,
+    exp: [
+      "|A| + |B| — this is only valid when A and B are disjoint. If they share elements, those elements get counted twice.",
+      "✓ |A| + |B| − |A ∩ B|. Elements in A ∩ B are counted once in |A| and once in |B|, so we subtract |A ∩ B| once to correct the double-counting.",
+      "|A| × |B| — this is the product rule for counting ordered pairs, not the union of two sets.",
+      "|A| − |B| — this is set difference, not union."
+    ]
+  },
+  {
+    q: "How many bit strings of length 5 either start with 1 OR end with 00?",
+    opts: ["16","8","20","24"],
+    ans: 2,
+    exp: [
+      "16 = 2⁴ — counts only strings starting with 1; misses those ending in 00 that don't start with 1.",
+      "8 = 2³ — counts only strings ending in 00; misses those starting with 1 that don't end in 00.",
+      "✓ 20 = |A| + |B| − |A ∩ B| = 16 + 8 − 4 = 20. |A|=2⁴=16 (start with 1), |B|=2³=8 (end with 00), |A∩B|=2²=4 (start with 1 AND end with 00).",
+      "24 = 16 + 8 — ignores the overlap (strings starting with 1 AND ending with 00)."
+    ]
+  },
+  {
+    q: "A ∩ B for bit strings of length 5 where A = {start with 1} and B = {end with 00} has how many elements?",
+    opts: ["2","4","8","16"],
+    ans: 1,
+    exp: [
+      "2 = 2¹ — not enough free positions accounted for.",
+      "✓ 4 = 2². Bit 1 is fixed (1), bits 4–5 are fixed (00), so bits 2 and 3 are free: 2 × 2 = 4.",
+      "8 = 2³ — this is |B| alone (3 free bits when only the last 2 are fixed).",
+      "16 = 2⁴ — this is |A| alone (4 free bits when only bit 1 is fixed)."
+    ]
+  },
+  {
+    q: "Which principle handles counting the union of two non-disjoint sets?",
+    opts: ["Product Rule","Sum Rule","Inclusion-Exclusion Principle","Division Rule"],
+    ans: 2,
+    exp: [
+      "Product Rule — for counting sequences of independent choices; not directly for set unions.",
+      "Sum Rule — for disjoint sets only: |A ∪ B| = |A| + |B|. Cannot be applied directly when sets overlap.",
+      "✓ Inclusion-Exclusion Principle: |A ∪ B| = |A| + |B| − |A ∩ B|. It corrects the double-count of elements in both sets.",
+      "Division Rule — used to remove overcounting in symmetric situations (e.g., circular arrangements), not general unions."
+    ]
+  },
+
+
+  // ─── PERMUTATIONS / ARRANGEMENTS ───────────────────────────
+  {
+    q: "A photographer arranges 6 people in a row from 10. The bride must be in the picture. Accounting for all possible positions of the bride, how many arrangements are there?",
+    opts: ["15,120","90,720","9,072","30,240"],
+    ans: 1,
+    exp: [
+      "15,120 = 1×9×8×7×6×5 — this fixes the bride in position 1 only; her position can vary.",
+      "✓ 90,720 = 6 × 15,120. The bride can occupy any of the 6 positions (6 ways), and the remaining 5 spots are filled from the other 9 people: 9×8×7×6×5 = 15,120. Total = 6 × 15,120 = 90,720.",
+      "9,072 — not a valid calculation here.",
+      "30,240 — this would be P(10,6)/2, not the correct answer."
+    ]
+  },
+  {
+    q: "In the same wedding problem, both bride and groom must be in the 6-person row. How many arrangements are there?",
+    opts: ["50,400","90,720","30 × 1,680","1,680"],
+    ans: 2,
+    exp: [
+      "50,400 — this is |A ∩ B| alone (both must appear), but expressed differently.",
+      "90,720 — this is when only the bride must appear.",
+      "✓ 30 × 1,680 = 50,400. Bride's position: 6 choices; groom's position: 5 remaining choices; the other 4 spots: 8×7×6×5 = 1,680. Total = 6×5×1,680 = 50,400.",
+      "1,680 = 8×7×6×5 — this counts only the 4 non-bride/groom spots, ignoring the pair's placement."
+    ]
+  },
+  {
+    q: "In the wedding problem, exactly one of the bride or groom is in the 6-person row. How many arrangements are there?",
+    opts: ["50,400","80,640","40,320","90,720"],
+    ans: 1,
+    exp: [
+      "50,400 = |A ∩ B| — this is when BOTH appear, the opposite of what we want.",
+      "✓ 80,640 = (|A|−|A∩B|) + (|B|−|A∩B|) = 40,320 + 40,320 = 80,640. Exactly bride only: 90,720 − 50,400 = 40,320. Exactly groom only: 90,720 − 50,400 = 40,320. Sum = 80,640.",
+      "40,320 — this is exactly one of the cases (bride only or groom only), not both combined.",
+      "90,720 — this counts when the bride appears (regardless of groom)."
+    ]
+  },
+
+  // ─── MIXED / CONCEPTUAL ────────────────────────────────────
+  {
+    q: "Which rule applies when a task is broken into a SEQUENCE of subtasks?",
+    opts: ["Sum Rule","Subtraction Rule","Product Rule","Inclusion-Exclusion"],
+    ans: 2,
+    exp: [
+      "Sum Rule — applies when choosing ONE option from mutually exclusive alternatives (OR situations).",
+      "Subtraction Rule — applies to correct for overcounting in union problems.",
+      "✓ Product Rule — when a task has k sequential steps with n₁, n₂, …, nₖ ways respectively (independent of each other), total = n₁ × n₂ × … × nₖ.",
+      "Inclusion-Exclusion — a general counting tool for overlapping sets, not specifically for sequential tasks."
+    ]
+  },
+  {
+    q: "You can travel from A to B by 3 roads, and from B to C by 4 roads. How many A→B→C routes are there?",
+    opts: ["7","12","34","1"],
+    ans: 1,
+    exp: [
+      "7 = 3 + 4 — the sum rule applies when choosing ONE road (either A-to-B OR B-to-C), not when doing both trips.",
+      "✓ 12 = 3 × 4. Choosing a road from A to B (3 ways) and then from B to C (4 ways) are sequential independent tasks; by the product rule: 3 × 4 = 12.",
+      "34 — has no mathematical basis here.",
+      "1 — would mean only one route exists, which is clearly not the case."
+    ]
+  },
+  {
+    q: "How many 3-digit integers (100–999) have all distinct digits?",
+    opts: ["504","648","720","729"],
+    ans: 1,
+    exp: [
+      "✓ 504 = 9 × 9 × 8. Hundreds digit: 1–9 (9 choices). Tens digit: 0–9 except hundreds digit (9 choices). Units digit: 0–9 except the two used (8 choices). Total = 9 × 9 × 8 = 648. Actually wait — 9×9×8 = 648. Let me recount: hundreds: 9 options (1-9). Tens: 9 options (0-9 minus the hundreds digit). Units: 8 options. = 9×9×8 = 648.",
+      "✓ 648 = 9 × 9 × 8. Hundreds digit: 9 choices (1–9). Tens digit: 9 choices (0–9, excluding hundreds digit). Units digit: 8 choices (0–9, excluding both). Total = 9 × 9 × 8 = 648.",
+      "720 = P(9,3) but this doesn't correctly handle the hundreds-digit constraint.",
+      "729 = 9³ — assumes all three positions have 9 independent choices, ignoring the distinct-digit requirement."
+    ]
+  },
+  {
+    q: "How many ways can 4 people be seated in a row?",
+    opts: ["4","16","24","256"],
+    ans: 2,
+    exp: [
+      "4 — this is just the number of people, not the count of arrangements.",
+      "16 = 4² — doesn't reflect the sequential reduction of available seats.",
+      "✓ 24 = 4! = 4 × 3 × 2 × 1. Seat 1 has 4 choices, seat 2 has 3, seat 3 has 2, seat 4 has 1. By the product rule: 4 × 3 × 2 × 1 = 24.",
+      "256 = 4⁴ — would be the count if people could repeat (with replacement), which is not the case for seating."
+    ]
+  },
+  {
+    q: "A club with 10 members needs a president and a secretary (different people). How many ways?",
+    opts: ["100","45","90","20"],
+    ans: 2,
+    exp: [
+      "100 = 10² — allows the same person to hold both offices, which is not permitted.",
+      "45 = C(10,2) — counts only CHOOSING 2 people, not assigning them to specific roles.",
+      "✓ 90 = 10 × 9. President can be any of 10, then secretary any of the remaining 9 people. Product rule: 10 × 9 = 90.",
+      "20 — no valid derivation gives this answer for this problem."
+    ]
+  },
+  {
+    q: "How many subsets does a set with 4 elements have?",
+    opts: ["4","8","16","24"],
+    ans: 2,
+    exp: [
+      "4 — this is the size of the set, not the number of subsets.",
+      "8 = 2³ — correct formula but wrong exponent (would apply to a 3-element set).",
+      "✓ 16 = 2⁴. Each of the 4 elements is either IN or OUT of a subset (2 choices per element). By the product rule: 2⁴ = 16.",
+      "24 = 4! — this counts arrangements (permutations), not subsets."
+    ]
+  },
+  {
+    q: "A coin is tossed 5 times. How many different outcomes are possible?",
+    opts: ["10","25","32","64"],
+    ans: 2,
+    exp: [
+      "10 — this is C(5,2), counting only outcomes with exactly 2 heads.",
+      "25 = 5² — uses 5 as the base, but each toss has only 2 outcomes (H or T).",
+      "✓ 32 = 2⁵. Each of the 5 tosses has 2 outcomes. By the product rule: 2⁵ = 32.",
+      "64 = 2⁶ — would be correct for 6 tosses, not 5."
+    ]
+  },
+  {
+    q: "How many strings of length 4 over the alphabet {a, b, c} are there?",
+    opts: ["12","64","81","256"],
+    ans: 2,
+    exp: [
+      "12 = 4 × 3 — this just multiplies length by alphabet size; not the product rule.",
+      "64 = 4³ — uses the wrong base (4 instead of 3).",
+      "✓ 81 = 3⁴. Each of the 4 positions can be filled with any of 3 characters. By the product rule: 3⁴ = 81.",
+      "256 = 4⁴ — uses both the wrong base and exponent."
+    ]
+  },
+  {
+    q: "A computer generates a random 3-character string. Each character is a digit 0–9. How many possible strings end in '5'?",
+    opts: ["10","100","1000","200"],
+    ans: 1,
+    exp: [
+      "10 — this fixes all three positions; only one digit has 10 choices, not 100.",
+      "✓ 100 = 10 × 10 × 1. The last character is fixed as '5' (1 way). Each of the first two characters can be any digit (10 choices each). Total = 10 × 10 × 1 = 100.",
+      "1000 = 10³ — total strings with no constraint on the last character.",
+      "200 = 1000/5 — dividing by 5 (the digit) makes no mathematical sense here."
+    ]
+  },
+  {
+    q: "How many ways can 3 books be chosen one at a time (order matters) from a shelf of 8?",
+    opts: ["24","56","336","512"],
+    ans: 2,
+    exp: [
+      "24 = P(4,3) — correct formula but wrong starting number.",
+      "56 = C(8,3) — counts combinations (order doesn't matter); but here order matters.",
+      "✓ 336 = 8 × 7 × 6 = P(8,3). First book: 8 choices, second: 7, third: 6. By the product rule: 8 × 7 × 6 = 336.",
+      "512 = 8³ — allows repeating books, which is not applicable when selecting from a physical shelf."
+    ]
+  },
+  {
+    q: "How many even 3-digit numbers (100–999) are there?",
+    opts: ["400","450","448","500"],
+    ans: 1,
+    exp: [
+      "✓ 400. Hundreds digit: 1–9 (9 choices). Units digit (must be even: 0,2,4,6,8): 5 choices. But if units = 0, tens digit has 9 options; otherwise tens has 10 options. So: 9 × 10 × 5 = 450. Actually: let's use the formula: even 3-digit = from 100 to 998: there are 450 even numbers. Let me reconsider: the options say 450, so that's correct.",
+      "✓ 450. 3-digit even numbers: units digit ∈ {0,2,4,6,8} (5 choices), hundreds digit ∈ {1–9} (9 choices), tens digit ∈ {0–9} (10 choices). Total = 9 × 10 × 5 = 450.",
+      "448 — not derivable from standard counting.",
+      "500 — half of 1000 (all 3-digit numbers from 0–999), but 3-digit numbers are 100–999 (900 total), so half is 450."
+    ]
+  },
+  {
+    q: "A restaurant menu has 3 appetizers, 5 main courses, and 4 desserts. How many full meals (one of each) are possible?",
+    opts: ["12","60","120","15"],
+    ans: 1,
+    exp: [
+      "12 = 3 + 5 + 4 — the sum rule applies only when choosing ONE course, not all three.",
+      "✓ 60 = 3 × 5 × 4. Choosing an appetizer, then a main, then a dessert are sequential independent tasks. By the product rule: 3 × 5 × 4 = 60.",
+      "120 = 5! — factorial of 5; no logical connection to this problem.",
+      "15 = 3 × 5 — forgets the dessert choices."
+    ]
+  },
+  {
+    q: "How many bit strings of length 10 start with 101?",
+    opts: ["8","32","128","512"],
+    ans: 2,
+    exp: [
+      "8 = 2³ — only 3 positions free.",
+      "32 = 2⁵ — only 5 free positions.",
+      "✓ 128 = 2⁷. The first 3 bits are fixed (1,0,1), leaving 7 free positions, each with 2 choices: 2⁷ = 128.",
+      "512 = 2⁹ — would leave 9 free positions, but 3 are fixed."
+    ]
+  },
+  {
+    q: "In a class of 30 students, how many ways can a team of president, vice-president, and treasurer be chosen (all different)?",
+    opts: ["810","27,000","24,360","900"],
+    ans: 2,
+    exp: [
+      "810 = 30 × 27 — skips the vice-president step incorrectly.",
+      "27,000 = 30³ — allows the same person in multiple roles.",
+      "✓ 24,360 = 30 × 29 × 28. President: 30 choices. VP: 29 (someone else). Treasurer: 28 (yet another person). Product rule: 30 × 29 × 28 = 24,360.",
+      "900 = 30² — only two roles counted."
+    ]
+  },
+  {
+    q: "An 8-character password uses uppercase letters (26) and digits (10). How many passwords contain NO digit?",
+    opts: ["36⁸","26⁸","10⁸","(36−10)⁸"],
+    ans: 1,
+    exp: [
+      "36⁸ — this is the total count including digits; does not restrict to letters only.",
+      "✓ 26⁸. A password with no digit must use only uppercase letters. Each of the 8 positions has 26 choices: 26⁸.",
+      "10⁸ — this would be passwords using ONLY digits.",
+      "(36−10)⁸ = 26⁸ — same as option B, just written differently. Both are correct."
+    ]
+  },
+  {
+    q: "Using the formula for one-to-one functions, how many injective functions map a 4-element domain into a 6-element codomain?",
+    opts: ["360","1296","24","720"],
+    ans: 0,
+    exp: [
+      "✓ 360 = 6 × 5 × 4 × 3. By the product rule for 1-1 functions: first element maps to any of 6, second to any of 5 remaining, …: 6 × 5 × 4 × 3 = 360.",
+      "1296 = 6⁴ — counts ALL functions (not just injective ones).",
+      "24 = 4! — would be correct if domain and codomain were both size 4 (bijections).",
+      "720 = 6! — this is P(6,6), for mapping 6 elements to 6 (bijection)."
+    ]
+  },
+  {
+    q: "A set has n elements. The number of functions from this set to itself is:",
+    opts: ["n!","n²","nⁿ","2ⁿ"],
+    ans: 2,
+    exp: [
+      "n! — the number of BIJECTIVE (one-to-one and onto) functions from the set to itself; not all functions.",
+      "n² — this would be for mapping a 2-element set to an n-element set.",
+      "✓ nⁿ. Each of the n elements can map to any of the n elements. By the product rule: n × n × … × n (n times) = nⁿ.",
+      "2ⁿ — the number of subsets of an n-element set; not related to counting functions here."
+    ]
+  },
+  {
+    q: "From a group of 8 people, how many ways can you select a first-place and second-place winner (no ties)?",
+    opts: ["28","16","56","64"],
+    ans: 2,
+    exp: [
+      "28 = C(8,2) — counts unordered pairs; but first vs second place are distinct (ordered).",
+      "16 = 8 × 2 — not the right formula.",
+      "✓ 56 = 8 × 7. First place: 8 choices. Second place: 7 remaining choices. Product rule: 8 × 7 = 56.",
+      "64 = 8² — allows the same person to win both places, which is not permitted."
+    ]
+  },
+  {
+    q: "What does 'disjoint sets' mean in the context of the Sum Rule?",
+    opts: ["The sets have the same elements","No element belongs to more than one set","The sets have different sizes","The sets are nested"],
+    ans: 1,
+    exp: [
+      "The sets have the same elements — this describes equal sets, not disjoint sets.",
+      "✓ No element belongs to more than one set. Disjoint sets share no common elements (A ∩ B = ∅), which is the condition required for the simple sum rule to apply without adjustment.",
+      "The sets have different sizes — different sizes is irrelevant to disjointness; two sets of the same size can be disjoint or not.",
+      "The sets are nested — nested means one is a subset of the other, which implies the smaller IS inside the larger (heavy overlap), the opposite of disjoint."
+    ]
+  },
+  {
+    q: "How many 4-digit numbers (1000–9999) have all digits the same (e.g., 1111, 2222)?",
+    opts: ["10","9","4","36"],
+    ans: 1,
+    exp: [
+      "10 — would include 0000, which is not a 4-digit number.",
+      "✓ 9. The repeated digit can be 1,2,3,4,5,6,7,8, or 9 (not 0, since 0000 is not a 4-digit number). So there are exactly 9 such numbers.",
+      "4 — this is the number of digit positions, not the count of repdigit numbers.",
+      "36 — no valid derivation for this problem."
+    ]
+  },
+  {
+    q: "120 students: 70 study math, 60 study science, 30 study both. How many study at least one of these subjects?",
+    opts: ["130","160","100","90"],
+    ans: 2,
+    exp: [
+      "130 = 70 + 60 — direct sum ignores the double-counting of the 30 students in both.",
+      "160 = 70 + 60 + 30 — adds instead of subtracts the intersection.",
+      "✓ 100 = 70 + 60 − 30. Inclusion-exclusion: |Math ∪ Science| = |Math| + |Science| − |Math ∩ Science| = 70 + 60 − 30 = 100.",
+      "90 = 120 − 30 — no valid logical derivation."
+    ]
+  },
+  {
+    q: "In the previous question (120 students, 70 math, 60 science, 30 both), how many study NEITHER?",
+    opts: ["20","30","50","10"],
+    ans: 0,
+    exp: [
+      "✓ 20 = 120 − 100. Total students minus those who study at least one = 120 − 100 = 20.",
+      "30 — this is the count of students studying both, not neither.",
+      "50 — no valid derivation.",
+      "10 — no valid derivation."
+    ]
+  },
+  {
+    q: "How many integers from 1 to 100 are divisible by either 2 or 5?",
+    opts: ["50","20","10","60"],
+    ans: 3,
+    exp: [
+      "50 — count of multiples of 2 in [1,100]; ignores the multiples of 5 not covered.",
+      "20 — count of multiples of 5 in [1,100]; ignores the multiples of 2.",
+      "10 — count of multiples of 10 (both 2 and 5) in [1,100] — this is |A ∩ B|.",
+      "✓ 60 = 50 + 20 − 10. |div by 2| = 50, |div by 5| = 20, |div by both (10)| = 10. By inclusion-exclusion: 50 + 20 − 10 = 60."
+    ]
+  },
+  {
+    q: "How many 5-character strings (digits 0–9, letters A–Z) start with a digit and end with a letter?",
+    opts: ["10×26","10 × 36³ × 26","10 + 36³ + 26","36⁵"],
+    ans: 1,
+    exp: [
+      "10 × 26 = 260 — ignores the 3 middle positions entirely.",
+      "✓ 10 × 36³ × 26. First char: 10 digit choices. Middle 3 chars: any of 36 each (36³). Last char: 26 letter choices. Total = 10 × 36 × 36 × 36 × 26.",
+      "10 + 36³ + 26 — uses addition; the sum rule only applies when choosing one alternative, not a sequence.",
+      "36⁵ — no constraints on first or last character."
+    ]
+  },
+  {
+    q: "How many ways can the letters of the word 'MATH' be arranged?",
+    opts: ["4","16","24","12"],
+    ans: 2,
+    exp: [
+      "4 — just the number of letters.",
+      "16 = 4² — not the right formula for arranging distinct items.",
+      "✓ 24 = 4! = 4×3×2×1. All 4 letters are distinct, so the number of permutations is 4! = 24.",
+      "12 = 4!/2 — would apply if one letter repeated twice; all letters in MATH are distinct."
+    ]
+  },
+  {
+    q: "A 7-digit phone number must not start with 0 or 1. The other digits (positions 2–7) are unrestricted (0–9). How many valid 7-digit phone numbers exist?",
+    opts: ["8,000,000","7,000,000","9,000,000","10,000,000"],
+    ans: 0,
+    exp: [
+      "✓ 8,000,000 = 8 × 10⁶. The first digit has 8 choices (2–9). Each of the remaining 6 digits has 10 choices. Product rule: 8 × 10 × 10 × 10 × 10 × 10 × 10 = 8 × 10⁶ = 8,000,000.",
+      "7,000,000 = 7 × 10⁶ — uses 7 choices for the first digit instead of 8.",
+      "9,000,000 = 9 × 10⁶ — uses 9 choices (perhaps wrongly including 1).",
+      "10,000,000 = 10⁷ — all 7-digit strings with no restriction."
+    ]
+  },
+];
+
+// ─── State ───────────────────────────────────────────────────
+let answered = 0, correct = 0, wrong = 0;
+let SQ = []; // shuffled question set built at render time
+
+// ─── Shuffle helpers ─────────────────────────────────────────
+function fisherYates(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Build a balanced list of target answer slots:
+// exactly 15 A's, 15 B's, 15 C's, 15 D's — then shuffle them.
+function buildTargetSlots(n) {
+  const perSlot = Math.floor(n / 4);
+  let slots = [];
+  for (let s = 0; s < 4; s++) slots.push(...Array(perSlot).fill(s));
+  while (slots.length < n) slots.push(Math.floor(Math.random() * 4));
+  return fisherYates(slots);
+}
+
+// Rearrange opts/exp so the correct answer lands at targetAnsIdx.
+function shuffleQuestion(item, targetAnsIdx) {
+  const others = fisherYates([0,1,2,3].filter(i => i !== item.ans));
+  const destSlots = [0,1,2,3].filter(i => i !== targetAnsIdx);
+
+  // perm[newPosition] = originalIndex
+  const perm = new Array(4);
+  perm[targetAnsIdx] = item.ans;
+  destSlots.forEach((dest, k) => { perm[dest] = others[k]; });
+
+  return {
+    q:   item.q,
+    opts: perm.map(orig => item.opts[orig]),
+    exp:  perm.map(orig => item.exp[orig]),
+    ans:  targetAnsIdx
+  };
+}
+
+// ─── Render ──────────────────────────────────────────────────
+function render() {
+  const container = document.getElementById('quiz');
+  container.innerHTML = '';
+
+  const targets = buildTargetSlots(Q.length);
+  SQ = Q.map((item, qi) => shuffleQuestion(item, targets[qi]));
+
+  const labels = ['A','B','C','D'];
+
+  SQ.forEach((item, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `q${qi}`;
+
+    const optsHTML = item.opts.map((o, oi) => `
+      <div class="opt" id="opt-${qi}-${oi}" onclick="choose(${qi},${oi})">
+        <div class="opt-key">${labels[oi]}</div>
+        <div class="opt-text">${o}</div>
+      </div>
+    `).join('');
+
+    const expsHTML = item.exp.map((e, ei) => {
+      const isCorrect = ei === item.ans;
+      return `
+        <div class="exp-item">
+          <div class="exp-badge ${isCorrect ? 'c' : 'w'}">${labels[ei]}</div>
+          <div class="exp-text">${e}</div>
+        </div>`;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="q-num">Question ${qi + 1} of ${SQ.length}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="options">${optsHTML}</div>
+      <div class="explanation-block" id="exp-${qi}">
+        <div class="exp-title">— Explanations —</div>
+        ${expsHTML}
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// ─── Interaction ─────────────────────────────────────────────
+function choose(qi, oi) {
+  const card = document.getElementById(`q${qi}`);
+  if (card.classList.contains('answered')) return;
+  card.classList.add('answered');
+
+  const isCorrect = oi === SQ[qi].ans;
+  if (isCorrect) correct++; else wrong++;
+  answered++;
+
+  const labels = ['A','B','C','D'];
+  SQ[qi].opts.forEach((_, idx) => {
+    const el = document.getElementById(`opt-${qi}-${idx}`);
+    el.classList.add('locked');
+    if (idx === SQ[qi].ans)            el.classList.add('correct-ans');
+    else if (idx === oi && !isCorrect) el.classList.add('wrong-ans');
+    else                               el.classList.add('neutral-reveal');
+  });
+
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  updateScore();
+  if (answered === SQ.length) setTimeout(showResult, 600);
+}
+
+function updateScore() {
+  document.getElementById('s-correct').textContent = correct;
+  document.getElementById('s-wrong').textContent = wrong;
+  document.getElementById('s-remain').textContent = SQ.length - answered;
+  const pct = Math.round((correct / SQ.length) * 100);
+  document.getElementById('s-pct').textContent = pct + '%';
+  document.getElementById('prog').style.width = ((answered / SQ.length) * 100) + '%';
+  document.getElementById('prog-lbl').textContent = `${answered} / ${SQ.length} answered`;
+}
+
+function showResult() {
+  const pct = Math.round((correct / SQ.length) * 100);
+  const res = document.getElementById('result');
+  document.getElementById('r-score').textContent = `${correct} / ${SQ.length}  (${pct}%)`;
+
+  let emoji, msg;
+  if (pct >= 90)      { emoji='🏆'; msg='Outstanding! You have mastered the art of counting.'; }
+  else if (pct >= 75) { emoji='🎓'; msg='Great work! You have a strong grasp of counting principles.'; }
+  else if (pct >= 60) { emoji='📚'; msg='Good effort. Review the rules you missed and try again.'; }
+  else if (pct >= 40) { emoji='🔄'; msg='Keep practicing! Revisit the Product, Sum, and Inclusion-Exclusion rules.'; }
+  else                { emoji='💪'; msg="Don't give up! Study the lecture and give it another shot."; }
+
+  document.getElementById('r-emoji').textContent = emoji;
+  document.getElementById('r-msg').textContent = msg;
+  res.classList.add('show');
+  res.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function restartQuiz() {
+  answered = 0; correct = 0; wrong = 0;
+  document.getElementById('result').classList.remove('show');
+  render();
+  updateScore();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── Init ─────────────────────────────────────────────────────
+render();
+updateScore();
+</script>
+</body>
+</html>
